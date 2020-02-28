@@ -1,8 +1,11 @@
-import {PEOPLE_FAILURE, PEOPLE_REQUEST, PEOPLE_SUCCESS} from "../types/people";
+import { PEOPLE_FAILURE, PEOPLE_REQUEST, PEOPLE_SUCCESS } from '../types/people';
 
 const initialState = {
-  peopleList: [],
-  isFetching: false
+  results: [],
+  isFetching: false,
+  count: 0,
+  next: null,
+  previous: null,
 };
 
 export default function (state = initialState, action) {
@@ -15,7 +18,7 @@ export default function (state = initialState, action) {
     case PEOPLE_SUCCESS:
       return {
         ...state,
-        peopleList: action.payload,
+        ...action.payload,
         isFetching: false,
       };
     case PEOPLE_FAILURE:

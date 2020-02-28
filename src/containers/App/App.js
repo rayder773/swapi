@@ -8,6 +8,7 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import PeoplePage from "../../pages/PeoplePage";
 import reducer from '../../store/reducers';
 import './App.css';
+import 'antd/dist/antd.css';
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
@@ -16,7 +17,7 @@ function App() {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route path="/people" component={PeoplePage}/>
+          <Route path="/people/:id?" component={PeoplePage}/>
           {/*<Route path="/login" component={LoginPage} />*/}
           {/*<Route path="/register" component={RegisterPage} />*/}
           app
