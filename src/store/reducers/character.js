@@ -1,28 +1,25 @@
-import { PEOPLE_FAILURE, PEOPLE_REQUEST, PEOPLE_SUCCESS } from '../types/people';
+import { CHARACTER_FAILURE, CHARACTER_REQUEST, CHARACTER_SUCCESS } from '../types/character';
 
 const initialState = {
-  results: [],
   isFetching: false,
-  count: 0,
-  next: null,
-  previous: null,
+  character: {},
   error: null,
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case PEOPLE_REQUEST:
+    case CHARACTER_REQUEST:
       return {
         ...state,
         isFetching: true,
       };
-    case PEOPLE_SUCCESS:
+    case CHARACTER_SUCCESS:
       return {
         ...state,
-        ...action.payload,
+        character: action.payload,
         isFetching: false,
       };
-    case PEOPLE_FAILURE:
+    case CHARACTER_FAILURE:
       return {
         ...initialState,
         error: action.payload,

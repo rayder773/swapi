@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { DEFAULT_URL } from '../../constants';
-import { PEOPLE_FAILURE, PEOPLE_REQUEST, PEOPLE_SUCCESS } from '../types/people';
+import { CHARACTER_SUCCESS, PEOPLE_FAILURE, PEOPLE_REQUEST, PEOPLE_SUCCESS } from '../types/people';
 
 const successPeopleList = (data) => ({
   type: PEOPLE_SUCCESS,
