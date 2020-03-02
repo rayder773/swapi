@@ -1,7 +1,24 @@
-import { PEOPLE_FAILURE, PEOPLE_REQUEST, PEOPLE_SUCCESS } from '../types/people';
+import {
+  PEOPLE_ADD_TO_FAVORITE,
+  PEOPLE_CHANGE_CURRENT_PAGE,
+  PEOPLE_FAILURE,
+  PEOPLE_REMOVE_FROM_FAVORITE,
+  PEOPLE_REQUEST, PEOPLE_SERCHED_SUCCESS,
+  PEOPLE_SUCCESS
+} from '../types/people';
 
+// const initialState = {
+//   results: [],
+//   isFetching: false,
+//   count: 0,
+//   next: null,
+//   previous: null,
+//   error: null,
+// };
 const initialState = {
-  results: [],
+  pages: {},
+  currentPage: 0,
+  results: [], //
   isFetching: false,
   count: 0,
   next: null,
@@ -10,6 +27,8 @@ const initialState = {
 };
 
 export default function (state = initialState, action) {
+  const {currentPage} = state;
+
   switch (action.type) {
     case PEOPLE_REQUEST:
       return {
@@ -20,12 +39,76 @@ export default function (state = initialState, action) {
       return {
         ...state,
         ...action.payload,
+        pages: {
+          ...state.pages,
+          [currentPage + 1]: [...action.payload.results],
+        },
+        currentPage: currentPage + 1,
+        results: [ //
+          // ...state.results,
+          ...action.payload.results,
+        ],
+        isFetching: false,
+      };
+    case PEOPLE_SERCHED_SUCCESS:
+      return {
+        ...action.payload,
+        pages: {
+          1: [...action.payload.results],
+        },
+        currentPage: 1,
         isFetching: false,
       };
     case PEOPLE_FAILURE:
       return {
         ...initialState,
         error: action.payload,
+      };
+    case PEOPLE_ADD_TO_FAVORITE:
+      console.log(state.pages)
+      return {
+        ...state,
+        pages: {
+          ...state.pages,
+          [currentPage]: action.payload,
+        },
+      };
+    case PEOPLE_REMOVE_FROM_FAVORITE:
+      // const newPages = Object.values(state.pages).map(item => {
+      //   if (item.name === action.payload.name) {
+      //     return {
+      //       ...item,
+      //       isFavorite: false,
+      //     };
+      //   } else {
+      //     return item;
+      //   }
+      // });
+      let newPages = {};
+      for(let key in state.pages) {
+        newPages[key] = state.pages[key].map(item => {
+          if (item.name === action.payload.name) {
+            return {
+              ...item,
+              isFavorite: false,
+            };
+          } else {
+            return item;
+          }
+        })
+      }
+
+      return {
+        ...state,
+        pages: {
+          ...newPages,
+        },
+      };
+    case PEOPLE_CHANGE_CURRENT_PAGE:
+      console.log(action.payload)
+      return {
+        ...state,
+        currentPage: action.payload,
       };
     default:
       return state;

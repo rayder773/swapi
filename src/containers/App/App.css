@@ -1,5 +1,9 @@
 @import "../../assets/style/global.scss";
 
+body {
+  color: #FFE81F;
+}
+
 .App {
   text-align: center;
 }

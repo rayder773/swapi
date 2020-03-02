@@ -5,7 +5,7 @@ import './styles.scss';
 const Header = () => {
   return (
     <div className="header">
-      <NavLink to="/people" activeClassName='active'>
+      <NavLink to="/people/" activeClassName='active'>
         People
       </NavLink>
       <NavLink to="/favorite">

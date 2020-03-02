@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "antd": "^4.0.0",
     "axios": "^0.19.2",
+    "firebase": "^7.9.3",
     "formik": "^2.1.4",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",

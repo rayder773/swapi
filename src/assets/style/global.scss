@@ -1,3 +1,10 @@
+
+$color_yellow: #FFE81F;
+
+body {
+  color: $color_yellow !important;
+}
+
 .main-button {
   height: 40px;
   padding: 0 20px;
@@ -7,3 +14,5 @@
   background: #ffffff;
   border-radius: 20px;
 }
+
+

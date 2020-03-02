@@ -3,10 +3,15 @@ import { connect } from 'react-redux';
 import {getPerson} from "../../store/actions/character";
 import {IMAGE_BASE} from "../../constants";
 
+const details = {
+  name: '',
+}
+
 const PersonDetails = (props) => {
   const {
     id,
     getPerson,
+    person,
   } = props;
 
   useEffect(() => {
@@ -15,8 +20,17 @@ const PersonDetails = (props) => {
 
   return (
     <div>
-      peopleDetails
+      peoson
       <img src={`${IMAGE_BASE}${id}.jpg`} alt="" />
+      <div>
+        {Object.entries(person).map(p => {
+          return (
+            <div key={p[1]} style={{color: 'white'}}>
+              {p[0]}: {p[1]}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 };
@@ -26,10 +40,7 @@ const mapDispatchToProps = {
 };
 
 const mapStateToProps = (state) => ({
-  // results: state.people.results,
-  // next: state.people.next,
-  // prev: state.people.previous,
-  // isFetching: state.people.isFetching,
+  person: state.character.character,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PersonDetails);

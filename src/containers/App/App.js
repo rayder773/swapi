@@ -1,30 +1,65 @@
-import React from 'react';
-import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
+import React, {useEffect} from 'react';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {applyMiddleware, createStore} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import {composeWithDevTools} from 'redux-devtools-extension';
 
-import PeoplePage from "../../pages/PeoplePage";
-import Header from "../../components/Header";
+import PeoplePage from '../../pages/PeoplePage';
+import PersonPage from '../../pages/PersonPage';
+import Header from '../../components/Header';
+import FavoriteList from '../../components/FavoriteList/FavoriteList';
 import reducer from '../../store/reducers';
 import './App.css';
+import '../../assets/style/global.scss';
 import 'antd/dist/antd.css';
-import FavoriteList from "../../components/FavoriteList/FavoriteList";
+import Background from "../../components/Background";
+import firebase from "../../helpers/firebaseConfig";
+import {FIREBASE_EMAIL, FIREBASE_PASSWORD} from "../../constants";
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
+
+
 function App() {
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log('sign in');
+        const database = firebase.database();
+        database.ref('DB').set({
+          username: 'NAME',
+          email: "email",
+          profile_picture : 'PICTURE'
+        });
+      } else {
+        firebase.auth().signInWithEmailAndPassword(FIREBASE_EMAIL, FIREBASE_PASSWORD).catch((error) => {
+          console.log(error);
+        });
+      }
+    });
+    // database.ref('users/' + 1).set({
+    //   username: 'NAME',
+    //   email: "email",
+    //   profile_picture : 'PICTURE'
+    // });
+
+  }, [])
+
+
   return (
     <Provider store={store}>
       <Router>
+        <Background/>
         <Header/>
         <Switch>
-          <Route path="/people/:id?" component={PeoplePage}/>
           <Route path="/favorite" component={FavoriteList}/>
-          {/*<Route path="/login" component={LoginPage} />*/}
-          {/*<Route path="/register" component={RegisterPage} />*/}
-          app
+          <Route path="/people/:id" component={PersonPage}/>
+          <Route path="/people" component={PeoplePage}/>
+
+          {/* <Route path="/login" component={LoginPage} /> */}
+          {/* <Route path="/register" component={RegisterPage} /> */}
         </Switch>
       </Router>
     </Provider>
