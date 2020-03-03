@@ -5,6 +5,7 @@ import {IMAGE_BASE} from "../../constants";
 
 const details = {
   name: '',
+  Height: '',
 }
 
 const PersonDetails = (props) => {

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {applyMiddleware, createStore} from 'redux';
 import {Provider} from 'react-redux';
@@ -19,35 +19,20 @@ import {FIREBASE_EMAIL, FIREBASE_PASSWORD} from "../../constants";
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
-
-
 function App() {
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('sign in');
-        const database = firebase.database();
-        database.ref('DB').set({
-          username: 'NAME',
-          email: "email",
-          profile_picture : 'PICTURE'
-        });
+        console.log(user);
       } else {
         firebase.auth().signInWithEmailAndPassword(FIREBASE_EMAIL, FIREBASE_PASSWORD).catch((error) => {
           console.log(error);
         });
       }
     });
-    // database.ref('users/' + 1).set({
-    //   username: 'NAME',
-    //   email: "email",
-    //   profile_picture : 'PICTURE'
-    // });
 
   }, [])
-
-
   return (
     <Provider store={store}>
       <Router>

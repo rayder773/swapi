@@ -1,39 +1,52 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {removeFromFavorite} from "../../store/actions/people";
 
 import './style.scss';
 import {DeleteIcon} from "../../assets/images";
+import db from "../../helpers/db";
+import {setFavoriteList} from "../../store/actions/favoriteList";
 
 const FavotiteList = (props) => {
-  const {pages, results, removeFromFavorite} = props;
 
-  let arr = [];
+  const {
+    pages,
+    results,
+    removeFromFavorite,
+    setFavoriteList,
+    favoriteList,
+  } = props;
 
-  Object.values(pages).forEach(item => {
-    return arr.push(...item);
-  });
+  useEffect(() => {
+    db.once('value', (snapshot) => {
+      setFavoriteList(snapshot.val());
+    });
+  }, [])
 
   const onDelete = (name) => {
-    // console.log(name)
-    const character = arr.find((item) => item.name === name);
-    character.isFavorite = false;
-    removeFromFavorite(character);
+    db.child(name).set({
+      favorite: false,
+    });
+
+    db.once('value', (snapshot) => {
+      setFavoriteList(snapshot.val());
+    });
   };
 
   return (
     <div className="favorite-list">
       <div className="favorite-list-container">
         <ul>
-          {arr.map(item => {
-            if (item.isFavorite) {
+          {Object.entries(favoriteList).map(item => {
+          // {arr.map(item => {
+            if (item[1].favorite) {
               return (
                 <li
-                  key={item.name}
+                  key={item[0]}
                 >
-                  {item.name}
-                  <DeleteIcon onClick={() => onDelete(item.name)}/>
+                  {item[0]}
+                  <DeleteIcon onClick={() => onDelete(item[0])} />
                 </li>
               )
             }
@@ -56,10 +69,12 @@ FavotiteList.defaultProps = {
 const mapStateToProps = (state) => ({
   pages: state.people.pages,
   results: state.people.results,
+  favoriteList: state.favorite.favoriteList,
 });
 
 const mapDispatchToProps = {
   removeFromFavorite,
+  setFavoriteList,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FavotiteList);
