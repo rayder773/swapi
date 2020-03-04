@@ -7,6 +7,11 @@
   margin-top: 48px;
   justify-content: center;
   color: $color_yellow;
+
+  .ant-tabs-tab {
+    background: transparent;
+  }
+
 }
 
 .person-details-description {

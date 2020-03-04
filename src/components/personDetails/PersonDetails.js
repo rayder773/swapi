@@ -4,12 +4,11 @@ import {getPerson} from "../../store/actions/character";
 import {getFilms} from "../../store/actions/films";
 import {getStarships} from "../../store/actions/starships";
 import {FILMS, IMAGE_BASE, SPECIES, STARSHIPS} from "../../constants";
-import {Spin, Tabs} from 'antd';
+import {Tabs} from 'antd';
 
 import './style.scss';
 import {getSpecies} from "../../store/actions/species";
 import Preloader from "../Preloader";
-import character from "../../store/reducers/character";
 
 const {TabPane} = Tabs;
 
@@ -29,6 +28,7 @@ const PersonDetails = (props) => {
     id,
     getPerson,
     person,
+    isFetching,
     getFilms,
     isFilmFetching,
     films,
@@ -47,10 +47,7 @@ const PersonDetails = (props) => {
   const onHandleTabClick = (type) => {
     switch (type) {
       case FILMS:
-        // console.log(Object.values(films).length)
-        if (Object.values(films).length === 0) {
-          return getFilms(person.films);
-        }
+        return getFilms(person.films);
         break;
       case STARSHIPS:
         return getStarships(person.starships);
@@ -61,53 +58,58 @@ const PersonDetails = (props) => {
 
   const SetTabPane = ({data, fetchType}) => {
     return (
-        <>
-          {fetchType ? <Preloader /> : Object.keys(data).length === 0 ? (
-                    <div className="tab-item"></div>
-                ) :
-                Object.values(data).map((item) => {
-                  return (
-                      <div className="tab-item">{item}</div>
-                  );
-                })
-          }
-        </>
+      <>
+        {fetchType ? <Preloader/> : Object.keys(data).length === 0 ? (
+            <div className="tab-item"></div>
+          ) :
+          Object.values(data).map((item) => {
+            return (
+              <div className="tab-item">{item}</div>
+            );
+          })
+        }
+      </>
     );
   };
 
-  return (
-      // {isFe}
+  return  (
+    // {isFe}
     <div className="person-details">
-      <img src={`${IMAGE_BASE}${id}.jpg`} alt=""/>
-      <div className="person-details-description">
-        {Object.entries(details).map((item) => {
-          return (
-            <div>
-              {item[0] === "name" ? (
-                <div className="person-details-name">{person[item[0]]}</div>
-              ) : (
-                <div className="person-details-block">
-                  <div className="person-details-block-first">
-                    {item[1]}:
-                  </div>
-                  <div className="person-details-block-second">{person[item[0]]}</div>
+      {isFetching ? <Preloader/> : (
+        <>
+          <img src={`${IMAGE_BASE}${id}.jpg`} alt=""/>
+          <div className="person-details-description">
+            {Object.entries(details).map((item) => {
+              return (
+                <div>
+                  {item[0] === "name" ? (
+                    <div className="person-details-name">{person[item[0]]}</div>
+                  ) : (
+                    <div className="person-details-block">
+                      <div className="person-details-block-first">
+                        {item[1]}:
+                      </div>
+                      <div className="person-details-block-second">{person[item[0]]}</div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )
-        })}
-        <Tabs type="card" onTabClick={onHandleTabClick}>
-          <TabPane tab="Films" key={FILMS}>
-            <SetTabPane data={films} fetchType={isFilmFetching} />
-          </TabPane>
-          <TabPane tab="Starships" key={STARSHIPS}>
-            <SetTabPane data={starships} fetchType={isStarshipsFetching} />
-          </TabPane>
-          <TabPane tab="Species" key={SPECIES}>
-            <SetTabPane data={species} fetchType={isSpeciesFetching} />
-          </TabPane>
-        </Tabs>
-      </div>
+              )
+            })}
+            <Tabs type="card" onTabClick={onHandleTabClick}>
+              <TabPane tab="Films" key={FILMS}>
+                <SetTabPane data={films} fetchType={isFilmFetching}/>
+              </TabPane>
+              <TabPane tab="Starships" key={STARSHIPS}>
+                <SetTabPane data={starships} fetchType={isStarshipsFetching}/>
+              </TabPane>
+              <TabPane tab="Species" key={SPECIES}>
+                <SetTabPane data={species} fetchType={isSpeciesFetching}/>
+              </TabPane>
+            </Tabs>
+          </div>
+        </>
+      )}
+
     </div>
   )
 };
@@ -121,6 +123,7 @@ const mapDispatchToProps = {
 
 const mapStateToProps = (state) => ({
   person: state.character.character,
+  isFetching: state.character.isFetching,
   isFilmFetching: state.films.isFetching,
   films: state.films.films,
   isStarshipsFetching: state.starships.isFetching,
