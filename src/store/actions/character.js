@@ -13,14 +13,12 @@ const successCharacter = (data) => ({
   },
 });
 
-
 const failureCharacter = (error) => ({
   type: CHARACTER_FAILURE,
   payload: {
     error,
   },
 });
-
 
 export const getPerson = (id = 1) => {
   return (dispatch) => {

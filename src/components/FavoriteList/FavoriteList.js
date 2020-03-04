@@ -16,6 +16,7 @@ const FavotiteList = (props) => {
     removeFromFavorite,
     setFavoriteList,
     favoriteList,
+    onItemSelected
   } = props;
 
   useEffect(() => {
@@ -45,7 +46,9 @@ const FavotiteList = (props) => {
                 <li
                   key={item[0]}
                 >
-                  {item[0]}
+                  <div onClick={() => onItemSelected(item[1].id)}>
+                    {item[0]}
+                  </div>
                   <DeleteIcon onClick={() => onDelete(item[0])} />
                 </li>
               )

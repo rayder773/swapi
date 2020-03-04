@@ -41,7 +41,6 @@ const PeopleList = (props) => {
     }
 
     db.once('value', (snapshot) => {
-      console.log('helloo');
       setFavoriteList(snapshot.val());
     });
   }, []);
@@ -72,14 +71,16 @@ const PeopleList = (props) => {
     return getPeople(prev);
   };
 
-  const onLike = (name) => {
-    if (Object.keys(favoriteList).length !== 0 && favoriteList[name]) {
-      db.child(name).set({
-        favorite: !favoriteList[name].favorite,
+  const onLike = (item) => {
+    if (favoriteList && Object.keys(favoriteList).length !== 0 && favoriteList[item.name]) {
+      db.child(item.name).set({
+        favorite: !favoriteList[item.name].favorite,
       });
     } else {
-      db.child(name).set({
+      db.child(item.name).set({
         favorite: true,
+        id: item.url.match(/\d+/)[0],
+        // id: item.url.match(/\d+/),
       });
     }
 
@@ -98,7 +99,7 @@ const PeopleList = (props) => {
   };
 
   const setColor = (name) => {
-    if (Object.keys(favoriteList).length !== 0
+    if (favoriteList && Object.keys(favoriteList).length !== 0
       && favoriteList[name]
       && favoriteList[name].favorite === true) {
       return YELLOW;
@@ -121,14 +122,15 @@ const PeopleList = (props) => {
             <ul>
               {page.map((item) => (
                 <li
-                    onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}
                   key={item.name}
                 >
-                  {item.name}
+                  <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
+                    {item.name}
+                  </div>
                   <LikeIcon
                     fill={setColor(item.name)}
                       // fill={favoriteList[item.url] &&  ? YELLOW : 'none'}
-                    onClick={() => onLike(item.name)}
+                    onClick={() => onLike(item)}
                   />
                 </li>
               ))}

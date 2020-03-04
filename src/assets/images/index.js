@@ -1,5 +1,6 @@
 import React from "react";
 import {YELLOW} from "../../constants/colors";
+import logo from './logo.svg';
 
 export const LikeIcon = ({fill = "none", stroke = YELLOW, onClick}) => {
   return (
@@ -40,5 +41,9 @@ export const DeleteIcon = ({onClick}) => {
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }
+
+export {
+  logo,
+};

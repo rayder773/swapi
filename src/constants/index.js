@@ -3,3 +3,7 @@ export const IMAGE_BASE = 'https://starwars-visualguide.com/assets/img/character
 
 export const FIREBASE_EMAIL = 'testemail@gmail.com';
 export const FIREBASE_PASSWORD = '123456';
+
+export const FILMS = 'FILMS';
+export const STARSHIPS = 'STARSHIPS';
+export const SPECIES = 'SPECIES';

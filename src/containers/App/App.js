@@ -8,7 +8,6 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import PeoplePage from '../../pages/PeoplePage';
 import PersonPage from '../../pages/PersonPage';
 import Header from '../../components/Header';
-import FavoriteList from '../../components/FavoriteList/FavoriteList';
 import reducer from '../../store/reducers';
 import './App.css';
 import '../../assets/style/global.scss';
@@ -16,6 +15,7 @@ import 'antd/dist/antd.css';
 import Background from "../../components/Background";
 import firebase from "../../helpers/firebaseConfig";
 import {FIREBASE_EMAIL, FIREBASE_PASSWORD} from "../../constants";
+import FavoritePage from "../../pages/FavoritePage";
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
@@ -39,7 +39,8 @@ function App() {
         <Background/>
         <Header/>
         <Switch>
-          <Route path="/favorite" component={FavoriteList}/>
+          <Route path="/favorite/:id" component={PersonPage}/>
+          <Route path="/favorite" component={FavoritePage}/>
           <Route path="/people/:id" component={PersonPage}/>
           <Route path="/people" component={PeoplePage}/>
 

@@ -9,7 +9,7 @@ const PeoplePage = ({ history }) => {
 
   return (
     <div className="people-page">
-      <PeopleList onItemSelected={(id) => history.push(id)} />
+      <PeopleList onItemSelected={(id) => history.push(`people/${id}`)} />
     </div>
   );
 };
