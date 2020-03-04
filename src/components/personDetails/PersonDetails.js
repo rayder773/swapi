@@ -7,6 +7,9 @@ import {FILMS, IMAGE_BASE, SPECIES, STARSHIPS} from "../../constants";
 import {Spin, Tabs} from 'antd';
 
 import './style.scss';
+import {getSpecies} from "../../store/actions/species";
+import Preloader from "../Preloader";
+import character from "../../store/reducers/character";
 
 const {TabPane} = Tabs;
 
@@ -32,22 +35,48 @@ const PersonDetails = (props) => {
     getStarships,
     isStarshipsFetching,
     starships,
+    getSpecies,
+    species,
+    isSpeciesFetching,
   } = props;
 
   useEffect(() => {
-    getPerson(id)
+    getPerson(id);
   }, [id]);
 
   const onHandleTabClick = (type) => {
     switch (type) {
       case FILMS:
-        return getFilms(person.films);
+        // console.log(Object.values(films).length)
+        if (Object.values(films).length === 0) {
+          return getFilms(person.films);
+        }
+        break;
       case STARSHIPS:
         return getStarships(person.starships);
+      case SPECIES:
+        return getSpecies(person.species);
     }
-  }
+  };
+
+  const SetTabPane = ({data, fetchType}) => {
+    return (
+        <>
+          {fetchType ? <Preloader /> : Object.keys(data).length === 0 ? (
+                    <div className="tab-item"></div>
+                ) :
+                Object.values(data).map((item) => {
+                  return (
+                      <div className="tab-item">{item}</div>
+                  );
+                })
+          }
+        </>
+    );
+  };
 
   return (
+      // {isFe}
     <div className="person-details">
       <img src={`${IMAGE_BASE}${id}.jpg`} alt=""/>
       <div className="person-details-description">
@@ -69,24 +98,13 @@ const PersonDetails = (props) => {
         })}
         <Tabs type="card" onTabClick={onHandleTabClick}>
           <TabPane tab="Films" key={FILMS}>
-            {isFilmFetching ? <Spin/> : Object.values(films).map((item) => {
-              return (
-                <div className="film-name">{item}</div>
-              );
-            })}
+            <SetTabPane data={films} fetchType={isFilmFetching} />
           </TabPane>
           <TabPane tab="Starships" key={STARSHIPS}>
-            {isStarshipsFetching ? <Spin/> : Object.keys(starships).length === 0 ? (
-                <div className="film-name">None</div>
-              ) :
-              Object.values(starships).map((item) => {
-                return (
-                  <div className="film-name">{item}</div>
-                );
-              })}
+            <SetTabPane data={starships} fetchType={isStarshipsFetching} />
           </TabPane>
           <TabPane tab="Species" key={SPECIES}>
-
+            <SetTabPane data={species} fetchType={isSpeciesFetching} />
           </TabPane>
         </Tabs>
       </div>
@@ -98,6 +116,7 @@ const mapDispatchToProps = {
   getPerson,
   getFilms,
   getStarships,
+  getSpecies,
 };
 
 const mapStateToProps = (state) => ({
@@ -106,6 +125,8 @@ const mapStateToProps = (state) => ({
   films: state.films.films,
   isStarshipsFetching: state.starships.isFetching,
   starships: state.starships.starships,
+  isSpeciesFetching: state.species.isFetching,
+  species: state.species.species,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PersonDetails);

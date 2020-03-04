@@ -4,6 +4,7 @@ import character from "./character";
 import favorite from "./favorite";
 import films from "./films";
 import starships from "./starships";
+import species from "./species";
 
 export default combineReducers({
   people,
@@ -11,4 +12,5 @@ export default combineReducers({
   favorite,
   films,
   starships,
+  species,
 });
