@@ -13,6 +13,7 @@ import { LikeIcon } from '../../assets/images';
 import character from '../../store/reducers/character';
 import { YELLOW } from '../../constants/colors';
 import db from '../../helpers/db';
+import Preloader from "../Preloader";
 
 const { Search } = Input;
 
@@ -110,6 +111,7 @@ const PeopleList = (props) => {
 
   return (
     <div className="people-list">
+
       <Search
         placeholder="input search text"
         onSearch={(value) => getPeople(`${DEFAULT_URL}/?search=${value}`, true)}
@@ -117,7 +119,7 @@ const PeopleList = (props) => {
       />
       <div className="people-list-container">
         {isFetching
-          ? <Spin size="large" className="people-list-spin" />
+          ? <Preloader/>
           : (
             <ul>
               {page.map((item) => (
