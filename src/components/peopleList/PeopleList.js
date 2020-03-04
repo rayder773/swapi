@@ -140,24 +140,27 @@ const PeopleList = (props) => {
           )}
       </div>
 
-      <Button
-        type="primary"
-        size="large"
-        shape="round"
-        onClick={onPrevPage}
-        disabled={!prev || currentPage < 2}
-      >
-        Prev
-      </Button>
-      <Button
-        type="primary"
-        size="large"
-        shape="round"
-        onClick={onNextPage}
-        disabled={!next}
-      >
-        Next
-      </Button>
+      <div className="people-list-buttons-container">
+        <Button
+          type="primary"
+          size="large"
+          shape="round"
+          onClick={onPrevPage}
+          disabled={!prev || currentPage < 2}
+        >
+          Prev
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          shape="round"
+          onClick={onNextPage}
+          disabled={!next}
+        >
+          Next
+        </Button>
+      </div>
+
     </div>
   );
 };

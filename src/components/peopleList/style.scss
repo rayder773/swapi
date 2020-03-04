@@ -4,19 +4,56 @@
   max-width: 800px;
   margin: 0 auto;
 
+  button {
+    background: $color_yellow;
+    border: none;
+    color: black;
+
+    &:hover {
+      background: $color_yellow_hover;
+      color: black;
+    }
+    &:focus {
+      background: $color_yellow_active;
+      color: black;
+    }
+  }
+
+  .ant-input-wrapper {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+
+    input {
+      background: transparent;
+      border: 1px $color_yellow solid;
+      color: white;
+
+      &::placeholder {
+        color: $color_yellow;
+      }
+    }
+    button {
+      background: white;
+      svg {
+        fill: black;
+      }
+
+    }
+  }
+
   &-container {
     min-height: 400px;
     width: 100%;
     max-width: 800px;
-    margin-top: 20px;
     display: flex;
     justify-content: center;
     position: relative;
     z-index: 100;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 50%);
+    //position: absolute;
+    //top: 50%;
+    //left: 50%;
+    //transform: translate(-50%, 50%);
     //border: 1px solid #f0f0f0;
   }
 
@@ -31,7 +68,8 @@
   ul {
 
     list-style: none;
-    width: 30%;
+    width: 100%;
+    max-width: 250px;
     padding: 0;
     margin: 0;
     transform: perspective(300px) rotateX(20deg);
@@ -63,5 +101,12 @@
     &:hover {
       outline: 1px solid $color_yellow;
     }
+  }
+
+  &-buttons-container {
+    display: flex;
+    max-width: 256px;
+    margin: 30px auto;
+    justify-content: space-between;
   }
 }

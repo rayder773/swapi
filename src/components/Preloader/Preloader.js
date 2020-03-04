@@ -3,7 +3,7 @@ import './style.scss';
 
 export default function Preloader() {
   return (
-    <div>
+    <div className="preloader">
       <span className="loader_wrapper">
         <svg viewBox="-50 -50 700 700" className="loader" xmlns="http://www.w3.org/2000/svg">
          <g>
