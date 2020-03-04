@@ -16,6 +16,7 @@ import Background from "../../components/Background";
 import firebase from "../../helpers/firebaseConfig";
 import {FIREBASE_EMAIL, FIREBASE_PASSWORD} from "../../constants";
 import FavoritePage from "../../pages/FavoritePage";
+import SideBar from "../../components/SideBar/SideBar";
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
@@ -43,9 +44,6 @@ function App() {
           <Route path="/favorite" component={FavoritePage}/>
           <Route path="/people/:id" component={PersonPage}/>
           <Route path="/people" component={PeoplePage}/>
-
-          {/* <Route path="/login" component={LoginPage} /> */}
-          {/* <Route path="/register" component={RegisterPage} /> */}
         </Switch>
       </Router>
     </Provider>

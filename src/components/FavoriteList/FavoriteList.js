@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {removeFromFavorite} from "../../store/actions/people";
@@ -7,6 +7,7 @@ import './style.scss';
 import {DeleteIcon} from "../../assets/images";
 import db from "../../helpers/db";
 import {setFavoriteList} from "../../store/actions/favoriteList";
+import SideBar from "../SideBar/SideBar";
 
 const FavotiteList = (props) => {
 
@@ -23,9 +24,13 @@ const FavotiteList = (props) => {
     db.once('value', (snapshot) => {
       setFavoriteList(snapshot.val());
     });
-  }, [])
+  }, []);
+
+  const [sortedData, setSortedData] = useState(null);
+  const [isAlphabetically, setIsAlphabetically] = useState(true);
 
   const onDelete = (name) => {
+    setSortedData(null);
     db.child(name).set({
       favorite: false,
     });
@@ -35,11 +40,29 @@ const FavotiteList = (props) => {
     });
   };
 
+  const onSort = () => {
+    let sorted;
+    const arr = Object.entries(favoriteList);
+    if (isAlphabetically) {
+      sorted = [...arr].sort((a, b) => {
+        return b[0].localeCompare(a[0])
+      });
+    } else {
+      sorted = [...arr].sort((a, b) => {
+        return a[0].localeCompare(b[0])
+      });
+    }
+    setIsAlphabetically(!isAlphabetically);
+    setSortedData(sorted);
+  };
+
   return (
     <div className="favorite-list">
+
       <div className="favorite-list-container">
+        <SideBar onSort={onSort}/>
         <ul>
-          {Object.entries(favoriteList).map(item => {
+          {(sortedData ? sortedData : Object.entries(favoriteList)).map(item => {
           // {arr.map(item => {
             if (item[1].favorite) {
               return (

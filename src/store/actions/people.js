@@ -5,7 +5,7 @@ import {
   CHARACTER_SUCCESS,
   PEOPLE_ADD_TO_FAVORITE, PEOPLE_CHANGE_CURRENT_PAGE,
   PEOPLE_FAILURE, PEOPLE_REMOVE_FROM_FAVORITE,
-  PEOPLE_REQUEST, PEOPLE_SERCHED_SUCCESS,
+  PEOPLE_REQUEST, PEOPLE_SERCHED_SUCCESS, PEOPLE_SORT_PAGE,
   PEOPLE_SUCCESS
 } from '../types/people';
 
@@ -29,6 +29,12 @@ const successPeopleList = (data, isSearched) => {
 const requestPeopleList = () => ({
   type: PEOPLE_REQUEST,
 });
+
+// export const sortPeople = (page) => ({
+//   type: PEOPLE_SORT_PAGE,
+//   payload: page,
+// });
+
 
 const failurePeopleList = (error) => ({
   type: PEOPLE_FAILURE,

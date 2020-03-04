@@ -3,12 +3,16 @@ import {connect} from 'react-redux';
 import {getPerson} from "../../store/actions/character";
 import {getFilms} from "../../store/actions/films";
 import {getStarships} from "../../store/actions/starships";
+import {setFavoriteList} from "../../store/actions/favoriteList";
 import {FILMS, IMAGE_BASE, SPECIES, STARSHIPS} from "../../constants";
 import {Tabs} from 'antd';
 
 import './style.scss';
 import {getSpecies} from "../../store/actions/species";
 import Preloader from "../Preloader";
+import db from "../../helpers/db";
+import {LikeIcon} from "../../assets/images";
+import {YELLOW} from "../../constants/colors";
 
 const {TabPane} = Tabs;
 
@@ -38,10 +42,16 @@ const PersonDetails = (props) => {
     getSpecies,
     species,
     isSpeciesFetching,
+    setFavoriteList,
+    favoriteList,
   } = props;
 
   useEffect(() => {
     getPerson(id);
+    db.once('value', (snapshot) => {
+      console.log(snapshot.val())
+      setFavoriteList(snapshot.val());
+    });
   }, [id]);
 
   const onHandleTabClick = (type) => {
@@ -72,8 +82,35 @@ const PersonDetails = (props) => {
     );
   };
 
-  return  (
-    // {isFe}
+  const onDelete = () => {
+    db.child(person.name).set({
+      favorite: false,
+    });
+
+    db.once('value', (snapshot) => {
+      setFavoriteList(snapshot.val());
+    });
+  };
+
+  const SetLike = () => {
+    let color = "";
+    if (Object.keys(favoriteList).length !== 0 &&
+          favoriteList[person.name] &&
+          favoriteList[person.name].favorite === true) {
+      color = YELLOW
+    }
+    return (
+      <LikeIcon
+        size={36}
+        fill={color}
+        onClick={onDelete}
+      />
+    )
+
+  }
+
+
+  return (
     <div className="person-details">
       {isFetching ? <Preloader/> : (
         <>
@@ -83,7 +120,10 @@ const PersonDetails = (props) => {
               return (
                 <div>
                   {item[0] === "name" ? (
-                    <div className="person-details-name">{person[item[0]]}</div>
+                    <div className="person-details-name">
+                      {person[item[0]]}
+                      <SetLike/>
+                    </div>
                   ) : (
                     <div className="person-details-block">
                       <div className="person-details-block-first">
@@ -119,11 +159,13 @@ const mapDispatchToProps = {
   getFilms,
   getStarships,
   getSpecies,
+  setFavoriteList
 };
 
 const mapStateToProps = (state) => ({
   person: state.character.character,
   isFetching: state.character.isFetching,
+  favoriteList: state.favorite.favoriteList,
   isFilmFetching: state.films.isFetching,
   films: state.films.films,
   isStarshipsFetching: state.starships.isFetching,

@@ -14,11 +14,6 @@
     justify-content: center;
     position: relative;
     z-index: 100;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 50%);
-    //border: 1px solid #f0f0f0;
   }
 
   &-spin {
@@ -39,7 +34,7 @@
   }
 
   li {
-    padding: 0;
+
     box-sizing: border-box;
     margin-bottom: 10px;
     display: flex;
@@ -52,14 +47,6 @@
     display: flex;
     justify-content: space-between;
 
-    svg {
-      //position: absolute;
-      //right: 8px;
-    }
-
-    &:last-child {
-      //border-bottom: 1px solid #f0f0f0;
-    }
 
     &:hover {
       outline: 1px solid $color_yellow;

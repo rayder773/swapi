@@ -3,7 +3,7 @@ import {
   PEOPLE_CHANGE_CURRENT_PAGE,
   PEOPLE_FAILURE,
   PEOPLE_REMOVE_FROM_FAVORITE,
-  PEOPLE_REQUEST, PEOPLE_SERCHED_SUCCESS,
+  PEOPLE_REQUEST, PEOPLE_SERCHED_SUCCESS, PEOPLE_SORT_PAGE,
   PEOPLE_SUCCESS
 } from '../types/people';
 
@@ -27,7 +27,7 @@ const initialState = {
 };
 
 export default function (state = initialState, action) {
-  const {currentPage} = state;
+  const {currentPage, pages} = state;
 
   switch (action.type) {
     case PEOPLE_REQUEST:
@@ -50,6 +50,17 @@ export default function (state = initialState, action) {
         ],
         isFetching: false,
       };
+    // case PEOPLE_SORT_PAGE:
+    //   console.log(action.payload)
+    //   return {
+    //     ...state,
+    //     pages: {
+    //       ...pages,
+    //       [action.payload]: pages[action.payload].sort((a, b) => {
+    //         return a.name.localeCompare(b.name)
+    //       }),
+    //     }
+    //   }
     case PEOPLE_SERCHED_SUCCESS:
       return {
         ...action.payload,
@@ -65,7 +76,6 @@ export default function (state = initialState, action) {
         error: action.payload,
       };
     case PEOPLE_ADD_TO_FAVORITE:
-      console.log(state.pages)
       return {
         ...state,
         pages: {
@@ -74,16 +84,6 @@ export default function (state = initialState, action) {
         },
       };
     case PEOPLE_REMOVE_FROM_FAVORITE:
-      // const newPages = Object.values(state.pages).map(item => {
-      //   if (item.name === action.payload.name) {
-      //     return {
-      //       ...item,
-      //       isFavorite: false,
-      //     };
-      //   } else {
-      //     return item;
-      //   }
-      // });
       let newPages = {};
       for(let key in state.pages) {
         newPages[key] = state.pages[key].map(item => {
@@ -105,7 +105,6 @@ export default function (state = initialState, action) {
         },
       };
     case PEOPLE_CHANGE_CURRENT_PAGE:
-      console.log(action.payload)
       return {
         ...state,
         currentPage: action.payload,

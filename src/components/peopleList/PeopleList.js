@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Button, Input, Spin } from 'antd';
+import {connect} from 'react-redux';
+import {Button, Input} from 'antd';
 // import Button from "../Button/Button";
-import { addToFavorite, getPeople, changeCurrentPage } from '../../store/actions/people';
-import { setFavoriteList } from '../../store/actions/favoriteList';
-import { DEFAULT_URL } from '../../constants';
-// import firebase from "../../helpers/firebaseConfig";
-
+import {addToFavorite, changeCurrentPage, getPeople} from '../../store/actions/people';
+import {setFavoriteList} from '../../store/actions/favoriteList';
+import {DEFAULT_URL} from '../../constants';
 import './style.scss';
-import { LikeIcon } from '../../assets/images';
-import character from '../../store/reducers/character';
-import { YELLOW } from '../../constants/colors';
+import {LikeIcon} from '../../assets/images';
+import {YELLOW} from '../../constants/colors';
 import db from '../../helpers/db';
 import Preloader from "../Preloader";
+import SideBar from "../SideBar/SideBar";
+// import firebase from "../../helpers/firebaseConfig";
 
-const { Search } = Input;
+const {Search} = Input;
 
 const PeopleList = (props) => {
   const {
@@ -33,6 +32,7 @@ const PeopleList = (props) => {
     changeCurrentPage,
     setFavoriteList,
     favoriteList,
+    // sortPeople
   } = props;
 
 
@@ -46,15 +46,19 @@ const PeopleList = (props) => {
     });
   }, []);
 
+  const [sortedData, setSortedData] = useState(null);
+  const [isAlphabetically, setIsAlphabetically] = useState(true);
 
   const onNextPage = () => {
     if (!next) {
       return false;
     }
+    cleanSorted();
     const newPage = currentPage + 1;
     if (pages[newPage]) {
       return changeCurrentPage(newPage);
     }
+
     return getPeople(next);
   };
 
@@ -62,7 +66,7 @@ const PeopleList = (props) => {
     if (!prev) {
       return false;
     }
-
+    cleanSorted();
     const newPage = currentPage - 1;
 
     if (pages[newPage]) {
@@ -88,15 +92,6 @@ const PeopleList = (props) => {
     db.once('value', (snapshot) => {
       setFavoriteList(snapshot.val());
     });
-    // const index = page.findIndex((item) => item.name === name);
-    // const character = page[index];
-    // character.isFavorite = !character.isFavorite;
-    // const newList = [
-    //   ...page.slice(0, index),
-    //   character,
-    //   ...page.slice(index + 1),
-    // ];
-    // addToFavorite(newList);
   };
 
   const setColor = (name) => {
@@ -109,59 +104,82 @@ const PeopleList = (props) => {
     return 'none';
   };
 
+  const cleanSorted = () => {
+    setSortedData(null);
+  };
+
+  const onSort = () => {
+    let sorted;
+    if (isAlphabetically) {
+      sorted = [...page].sort((a, b) => {
+        return b.name.localeCompare(a.name)
+      });
+    } else {
+      sorted = [...page].sort((a, b) => {
+        return a.name.localeCompare(b.name)
+      });
+    }
+    setIsAlphabetically(!isAlphabetically);
+    setSortedData(sorted);
+  };
+
   return (
-    <div className="people-list">
+    <div>
+      <SideBar onSort={onSort}/>
+      <div className="people-list">
 
-      <Search
-        placeholder="input search text"
-        onSearch={(value) => getPeople(`${DEFAULT_URL}/?search=${value}`, true)}
-        enterButton
-      />
-      <div className="people-list-container">
-        {isFetching
-          ? <Preloader/>
-          : (
-            <ul>
-              {page.map((item) => (
-                <li
-                  key={item.name}
-                >
-                  <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
-                    {item.name}
-                  </div>
-                  <LikeIcon
-                    fill={setColor(item.name)}
+        <Search
+          placeholder="input search text"
+          onSearch={(value) => getPeople(`${DEFAULT_URL}/?search=${value}`, true)}
+          enterButton
+        />
+        <div className="people-list-container">
+          {isFetching
+            ? <Preloader/>
+            : (
+              <ul>
+                {(sortedData ? sortedData : page).map((item) => (
+                  <li
+                    key={item.name}
+                  >
+                    <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
+                      {item.name}
+                    </div>
+                    <LikeIcon
+                      fill={setColor(item.name)}
                       // fill={favoriteList[item.url] &&  ? YELLOW : 'none'}
-                    onClick={() => onLike(item)}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-      </div>
+                      onClick={() => onLike(item)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
 
-      <div className="people-list-buttons-container">
-        <Button
-          type="primary"
-          size="large"
-          shape="round"
-          onClick={onPrevPage}
-          disabled={!prev || currentPage < 2}
-        >
-          Prev
-        </Button>
-        <Button
-          type="primary"
-          size="large"
-          shape="round"
-          onClick={onNextPage}
-          disabled={!next}
-        >
-          Next
-        </Button>
-      </div>
+        <div className="people-list-buttons-container">
+          <Button
+            type="primary"
+            size="large"
+            shape="round"
+            onClick={onPrevPage}
+            disabled={!prev || currentPage < 2}
+          >
+            Prev
+          </Button>
+          <Button
+            type="primary"
+            size="large"
+            shape="round"
+            onClick={onNextPage}
+            disabled={!next}
+          >
+            Next
+          </Button>
+        </div>
 
+      </div>
     </div>
+
   );
 };
 
@@ -180,14 +198,11 @@ const mapDispatchToProps = {
   addToFavorite,
   changeCurrentPage,
   setFavoriteList,
+  // sortPeople,
 };
 
 const mapStateToProps = (state) => {
-  // const { results } = state.people;
-  // results.forEach((item) => {
-  //   return item.isFavorite = false;
-  // });
-  const { pages, currentPage } = state.people;
+  const {pages, currentPage} = state.people;
   const lastDownloadedPage = Object.keys(pages).length;
 
   return {
