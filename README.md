@@ -1,9 +1,8 @@
 
 
-## Star wars [people list](https://swapi.co/).
+## Star wars [people list](https://swapi.co/)
 
-
-### `npm i`
+### `npm i` - for start
 
 I userd firebase for 
 
