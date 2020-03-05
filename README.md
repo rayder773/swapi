@@ -1,6 +1,11 @@
-## For start
+
+
+## Star wars [people list](https://swapi.co/).
+
 
 ### `npm i`
+
+I userd firebase for 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
