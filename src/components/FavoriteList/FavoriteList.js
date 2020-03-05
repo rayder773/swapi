@@ -1,23 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {removeFromFavorite} from "../../store/actions/people";
+import { connect } from 'react-redux';
+import { removeFromFavorite } from '../../store/actions/people';
+import { DeleteIcon } from '../../assets/images';
+import db from '../../helpers/db';
+import { setFavoriteList } from '../../store/actions/favoriteList';
 
 import './style.scss';
-import {DeleteIcon} from "../../assets/images";
-import db from "../../helpers/db";
-import {setFavoriteList} from "../../store/actions/favoriteList";
-import SideBar from "../SideBar/SideBar";
 
 const FavotiteList = (props) => {
-
   const {
-    pages,
-    results,
-    removeFromFavorite,
     setFavoriteList,
     favoriteList,
-    onItemSelected
+    onItemSelected,
   } = props;
 
   useEffect(() => {
@@ -26,11 +21,7 @@ const FavotiteList = (props) => {
     });
   }, []);
 
-  const [sortedData, setSortedData] = useState(null);
-  const [isAlphabetically, setIsAlphabetically] = useState(true);
-
   const onDelete = (name) => {
-    setSortedData(null);
     db.child(name).set({
       favorite: false,
     });
@@ -40,29 +31,11 @@ const FavotiteList = (props) => {
     });
   };
 
-  const onSort = () => {
-    let sorted;
-    const arr = Object.entries(favoriteList);
-    if (isAlphabetically) {
-      sorted = [...arr].sort((a, b) => {
-        return b[0].localeCompare(a[0])
-      });
-    } else {
-      sorted = [...arr].sort((a, b) => {
-        return a[0].localeCompare(b[0])
-      });
-    }
-    setIsAlphabetically(!isAlphabetically);
-    setSortedData(sorted);
-  };
-
   return (
     <div className="favorite-list">
-
       <div className="favorite-list-container">
-        <SideBar onSort={onSort}/>
         <ul>
-          {(sortedData ? sortedData : Object.entries(favoriteList)).map(item => {
+          {Object.entries(favoriteList).map((item) => {
           // {arr.map(item => {
             if (item[1].favorite) {
               return (
@@ -74,7 +47,7 @@ const FavotiteList = (props) => {
                   </div>
                   <DeleteIcon onClick={() => onDelete(item[0])} />
                 </li>
-              )
+              );
             }
           })}
         </ul>
@@ -84,7 +57,10 @@ const FavotiteList = (props) => {
 };
 
 FavotiteList.propTypes = {
-  pages: PropTypes.object,
+  favoriteList: PropTypes.object.isRequired,
+  onItemSelected: PropTypes.func.isRequired,
+  pages: PropTypes.object.isRequired,
+  setFavoriteList: PropTypes.func.isRequired,
 };
 
 FavotiteList.defaultProps = {
