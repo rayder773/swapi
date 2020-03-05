@@ -1,64 +1,58 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {Button, Input} from 'antd';
-// import Button from "../Button/Button";
-import {addToFavorite, changeCurrentPage, getPeople} from '../../store/actions/people';
-import {setFavoriteList} from '../../store/actions/favoriteList';
-import {DEFAULT_URL} from '../../constants';
-import './style.scss';
-import {LikeIcon} from '../../assets/images';
-import {YELLOW} from '../../constants/colors';
+import { connect } from 'react-redux';
+import { Button, Input } from 'antd';
+import {
+  addToFavorite,
+  getPeople,
+  changeCurrentPage,
+} from '../../store/actions/people';
+import { setFavoriteList } from '../../store/actions/favoriteList';
+import { DEFAULT_URL } from '../../constants';
+import { YELLOW } from '../../constants/colors';
+import { LikeIcon } from '../../assets/images';
 import db from '../../helpers/db';
-import Preloader from "../Preloader";
-import SideBar from "../SideBar/SideBar";
-// import firebase from "../../helpers/firebaseConfig";
+import Preloader from '../Preloader';
 
-const {Search} = Input;
+import './style.scss';
+
+const { Search } = Input;
 
 const PeopleList = (props) => {
   const {
     getPeople,
-    results,
     next,
     prev,
     isFetching,
     onItemSelected,
-    addToFavorite,
     currentPage,
     page,
     pages,
-    lastDownloadedPage,
     changeCurrentPage,
     setFavoriteList,
     favoriteList,
-    // sortPeople
   } = props;
-
 
   useEffect(() => {
     if (!currentPage) {
       getPeople();
     }
 
+    // get favorite list from firebase
     db.once('value', (snapshot) => {
       setFavoriteList(snapshot.val());
     });
   }, []);
 
-  const [sortedData, setSortedData] = useState(null);
-  const [isAlphabetically, setIsAlphabetically] = useState(true);
-
   const onNextPage = () => {
     if (!next) {
       return false;
     }
-    cleanSorted();
     const newPage = currentPage + 1;
     if (pages[newPage]) {
+      // change page
       return changeCurrentPage(newPage);
     }
-
     return getPeople(next);
   };
 
@@ -66,10 +60,11 @@ const PeopleList = (props) => {
     if (!prev) {
       return false;
     }
-    cleanSorted();
+
     const newPage = currentPage - 1;
 
     if (pages[newPage]) {
+      // change page
       return changeCurrentPage(newPage);
     }
 
@@ -77,15 +72,20 @@ const PeopleList = (props) => {
   };
 
   const onLike = (item) => {
-    if (favoriteList && Object.keys(favoriteList).length !== 0 && favoriteList[item.name]) {
-      db.child(item.name).set({
+    console.log(item.url.match(/\d+/)[0])
+    if (
+      favoriteList
+      && Object.keys(favoriteList).length !== 0
+      && favoriteList[item.name]
+    ) {
+      // here we can add or remove from/to favorite list
+      db.child(item.name).update({
         favorite: !favoriteList[item.name].favorite,
       });
     } else {
       db.child(item.name).set({
         favorite: true,
         id: item.url.match(/\d+/)[0],
-        // id: item.url.match(/\d+/),
       });
     }
 
@@ -95,102 +95,93 @@ const PeopleList = (props) => {
   };
 
   const setColor = (name) => {
-    if (favoriteList && Object.keys(favoriteList).length !== 0
+    if (
+      favoriteList
+      && Object.keys(favoriteList).length !== 0
       && favoriteList[name]
-      && favoriteList[name].favorite === true) {
+      && favoriteList[name].favorite === true
+    ) {
       return YELLOW;
     }
 
     return 'none';
   };
 
-  const cleanSorted = () => {
-    setSortedData(null);
-  };
-
-  const onSort = () => {
-    let sorted;
-    if (isAlphabetically) {
-      sorted = [...page].sort((a, b) => {
-        return b.name.localeCompare(a.name)
-      });
-    } else {
-      sorted = [...page].sort((a, b) => {
-        return a.name.localeCompare(b.name)
-      });
-    }
-    setIsAlphabetically(!isAlphabetically);
-    setSortedData(sorted);
-  };
-
   return (
-    <div>
-      <SideBar onSort={onSort}/>
-      <div className="people-list">
+    <div className="people-list">
+      <Search
+        placeholder="input search text"
+        // second argument im method getPeople()
+        // is defining update peopleList according to search result
+        onSearch={(value) => getPeople(`${DEFAULT_URL}/?search=${value}`, true)}
+        enterButton
+      />
+      <div className="people-list-container">
+        {isFetching ? (
+          <Preloader />
+        ) : (
+          <ul>
+            {page.map((item) => (
+              <li key={item.name}>
+                {/* take id of character from url property which we got from .../people */}
+                <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
+                  {item.name}
+                </div>
+                <LikeIcon
+                  fill={setColor(item.name)}
+                  onClick={() => onLike(item)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
-        <Search
-          placeholder="input search text"
-          onSearch={(value) => getPeople(`${DEFAULT_URL}/?search=${value}`, true)}
-          enterButton
-        />
-        <div className="people-list-container">
-          {isFetching
-            ? <Preloader/>
-            : (
-              <ul>
-                {(sortedData ? sortedData : page).map((item) => (
-                  <li
-                    key={item.name}
-                  >
-                    <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
-                      {item.name}
-                    </div>
-                    <LikeIcon
-                      fill={setColor(item.name)}
-                      // fill={favoriteList[item.url] &&  ? YELLOW : 'none'}
-                      onClick={() => onLike(item)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-        </div>
-
-        <div className="people-list-buttons-container">
-          <Button
-            type="primary"
-            size="large"
-            shape="round"
-            onClick={onPrevPage}
-            disabled={!prev || currentPage < 2}
-          >
-            Prev
-          </Button>
-          <Button
-            type="primary"
-            size="large"
-            shape="round"
-            onClick={onNextPage}
-            disabled={!next}
-          >
-            Next
-          </Button>
-        </div>
-
+      <div className="people-list-buttons-container">
+        <Button
+          type="primary"
+          size="large"
+          shape="round"
+          onClick={onPrevPage}
+          disabled={!prev || currentPage < 2}
+        >
+          Prev
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          shape="round"
+          onClick={onNextPage}
+          disabled={!next}
+        >
+          Next
+        </Button>
       </div>
     </div>
-
   );
 };
 
 PeopleList.defaultProps = {
+  favoriteList: {},
   isFetching: false,
   page: [],
+  pages: {},
+  next: null,
+  prev: null,
 };
 
 PeopleList.propTypes = {
+  changeCurrentPage: PropTypes.func.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  favoriteList: PropTypes.object,
+  getPeople: PropTypes.func.isRequired,
   isFetching: PropTypes.bool,
-  // results: Pe
+  next: PropTypes.string,
+  onItemSelected: PropTypes.func.isRequired,
+  page: PropTypes.array,
+  pages: PropTypes.object,
+  prev: PropTypes.string,
+  setFavoriteList: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
@@ -198,11 +189,10 @@ const mapDispatchToProps = {
   addToFavorite,
   changeCurrentPage,
   setFavoriteList,
-  // sortPeople,
 };
 
 const mapStateToProps = (state) => {
-  const {pages, currentPage} = state.people;
+  const { pages, currentPage } = state.people;
   const lastDownloadedPage = Object.keys(pages).length;
 
   return {
@@ -210,7 +200,6 @@ const mapStateToProps = (state) => {
     currentPage,
     lastDownloadedPage,
     pages,
-    results: state.people.results,
     next: state.people.next,
     prev: state.people.previous,
     isFetching: state.people.isFetching,
