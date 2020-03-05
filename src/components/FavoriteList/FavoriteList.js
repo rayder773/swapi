@@ -1,29 +1,25 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {removeFromFavorite} from "../../store/actions/people";
+import { connect } from 'react-redux';
+import { removeFromFavorite } from '../../store/actions/people';
+import { DeleteIcon } from '../../assets/images';
+import db from '../../helpers/db';
+import { setFavoriteList } from '../../store/actions/favoriteList';
 
 import './style.scss';
-import {DeleteIcon} from "../../assets/images";
-import db from "../../helpers/db";
-import {setFavoriteList} from "../../store/actions/favoriteList";
 
 const FavotiteList = (props) => {
-
   const {
-    pages,
-    results,
-    removeFromFavorite,
     setFavoriteList,
     favoriteList,
-    onItemSelected
+    onItemSelected,
   } = props;
 
   useEffect(() => {
     db.once('value', (snapshot) => {
       setFavoriteList(snapshot.val());
     });
-  }, [])
+  }, []);
 
   const onDelete = (name) => {
     db.child(name).set({
@@ -39,7 +35,7 @@ const FavotiteList = (props) => {
     <div className="favorite-list">
       <div className="favorite-list-container">
         <ul>
-          {Object.entries(favoriteList).map(item => {
+          {Object.entries(favoriteList).map((item) => {
           // {arr.map(item => {
             if (item[1].favorite) {
               return (
@@ -51,7 +47,7 @@ const FavotiteList = (props) => {
                   </div>
                   <DeleteIcon onClick={() => onDelete(item[0])} />
                 </li>
-              )
+              );
             }
           })}
         </ul>
@@ -61,7 +57,10 @@ const FavotiteList = (props) => {
 };
 
 FavotiteList.propTypes = {
-  pages: PropTypes.object,
+  favoriteList: PropTypes.object.isRequired,
+  onItemSelected: PropTypes.func.isRequired,
+  pages: PropTypes.object.isRequired,
+  setFavoriteList: PropTypes.func.isRequired,
 };
 
 FavotiteList.defaultProps = {

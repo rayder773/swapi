@@ -1,16 +1,18 @@
-import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
-import {getPerson} from "../../store/actions/character";
-import {getFilms} from "../../store/actions/films";
-import {getStarships} from "../../store/actions/starships";
-import {FILMS, IMAGE_BASE, SPECIES, STARSHIPS} from "../../constants";
-import {Tabs} from 'antd';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Tabs } from 'antd';
+import { getPerson } from '../../store/actions/character';
+import { getFilms } from '../../store/actions/films';
+import { getStarships } from '../../store/actions/starships';
+import {
+  FILMS, IMAGE_BASE, SPECIES, STARSHIPS,
+} from '../../constants';
 
 import './style.scss';
-import {getSpecies} from "../../store/actions/species";
-import Preloader from "../Preloader";
+import { getSpecies } from '../../store/actions/species';
+import Preloader from '../Preloader';
 
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const details = {
   name: 'name',
@@ -56,54 +58,48 @@ const PersonDetails = (props) => {
     }
   };
 
-  const SetTabPane = ({data, fetchType}) => {
-    return (
-      <>
-        {fetchType ? <Preloader/> : Object.keys(data).length === 0 ? (
-            <div className="tab-item"></div>
-          ) :
-          Object.values(data).map((item) => {
-            return (
-              <div className="tab-item">{item}</div>
-            );
-          })
-        }
-      </>
-    );
-  };
+  const SetTabPane = ({ data, fetchType }) => (
+    <>
+      {fetchType ? <Preloader /> : Object.keys(data).length === 0 ? (
+        <div className="tab-item" />
+      )
+        : Object.values(data).map((item) => (
+          <div className="tab-item">{item}</div>
+        ))}
+    </>
+  );
 
-  return  (
+  return (
     // {isFe}
     <div className="person-details">
-      {isFetching ? <Preloader/> : (
+      {isFetching ? <Preloader /> : (
         <>
-          <img src={`${IMAGE_BASE}${id}.jpg`} alt=""/>
+          <img src={`${IMAGE_BASE}${id}.jpg`} alt="" />
           <div className="person-details-description">
-            {Object.entries(details).map((item) => {
-              return (
-                <div>
-                  {item[0] === "name" ? (
-                    <div className="person-details-name">{person[item[0]]}</div>
-                  ) : (
-                    <div className="person-details-block">
-                      <div className="person-details-block-first">
-                        {item[1]}:
-                      </div>
-                      <div className="person-details-block-second">{person[item[0]]}</div>
+            {Object.entries(details).map((item) => (
+              <div>
+                {item[0] === 'name' ? (
+                  <div className="person-details-name">{person[item[0]]}</div>
+                ) : (
+                  <div className="person-details-block">
+                    <div className="person-details-block-first">
+                      {item[1]}
+                      :
                     </div>
-                  )}
-                </div>
-              )
-            })}
+                    <div className="person-details-block-second">{person[item[0]]}</div>
+                  </div>
+                )}
+              </div>
+            ))}
             <Tabs type="card" onTabClick={onHandleTabClick}>
               <TabPane tab="Films" key={FILMS}>
-                <SetTabPane data={films} fetchType={isFilmFetching}/>
+                <SetTabPane data={films} fetchType={isFilmFetching} />
               </TabPane>
               <TabPane tab="Starships" key={STARSHIPS}>
-                <SetTabPane data={starships} fetchType={isStarshipsFetching}/>
+                <SetTabPane data={starships} fetchType={isStarshipsFetching} />
               </TabPane>
               <TabPane tab="Species" key={SPECIES}>
-                <SetTabPane data={species} fetchType={isSpeciesFetching}/>
+                <SetTabPane data={species} fetchType={isSpeciesFetching} />
               </TabPane>
             </Tabs>
           </div>
@@ -111,7 +107,7 @@ const PersonDetails = (props) => {
       )}
 
     </div>
-  )
+  );
 };
 
 const mapDispatchToProps = {

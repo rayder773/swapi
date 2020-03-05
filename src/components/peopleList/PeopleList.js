@@ -1,51 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Input, Spin } from 'antd';
-// import Button from "../Button/Button";
-import { addToFavorite, getPeople, changeCurrentPage } from '../../store/actions/people';
+import { Button, Input } from 'antd';
+import {
+  addToFavorite,
+  getPeople,
+  changeCurrentPage,
+} from '../../store/actions/people';
 import { setFavoriteList } from '../../store/actions/favoriteList';
 import { DEFAULT_URL } from '../../constants';
-// import firebase from "../../helpers/firebaseConfig";
+import { YELLOW } from '../../constants/colors';
+import { LikeIcon } from '../../assets/images';
+import db from '../../helpers/db';
+import Preloader from '../Preloader';
 
 import './style.scss';
-import { LikeIcon } from '../../assets/images';
-import character from '../../store/reducers/character';
-import { YELLOW } from '../../constants/colors';
-import db from '../../helpers/db';
-import Preloader from "../Preloader";
 
 const { Search } = Input;
 
 const PeopleList = (props) => {
   const {
     getPeople,
-    results,
     next,
     prev,
     isFetching,
     onItemSelected,
-    addToFavorite,
     currentPage,
     page,
     pages,
-    lastDownloadedPage,
     changeCurrentPage,
     setFavoriteList,
     favoriteList,
   } = props;
-
 
   useEffect(() => {
     if (!currentPage) {
       getPeople();
     }
 
+    // get favorite list from firebase
     db.once('value', (snapshot) => {
       setFavoriteList(snapshot.val());
     });
   }, []);
-
 
   const onNextPage = () => {
     if (!next) {
@@ -53,6 +50,7 @@ const PeopleList = (props) => {
     }
     const newPage = currentPage + 1;
     if (pages[newPage]) {
+      // change page
       return changeCurrentPage(newPage);
     }
     return getPeople(next);
@@ -66,6 +64,7 @@ const PeopleList = (props) => {
     const newPage = currentPage - 1;
 
     if (pages[newPage]) {
+      // change page
       return changeCurrentPage(newPage);
     }
 
@@ -73,7 +72,12 @@ const PeopleList = (props) => {
   };
 
   const onLike = (item) => {
-    if (favoriteList && Object.keys(favoriteList).length !== 0 && favoriteList[item.name]) {
+    if (
+      favoriteList
+      && Object.keys(favoriteList).length !== 0
+      && favoriteList[item.name]
+    ) {
+      // here we can add or remove from/to favorite list
       db.child(item.name).set({
         favorite: !favoriteList[item.name].favorite,
       });
@@ -81,28 +85,21 @@ const PeopleList = (props) => {
       db.child(item.name).set({
         favorite: true,
         id: item.url.match(/\d+/)[0],
-        // id: item.url.match(/\d+/),
       });
     }
 
     db.once('value', (snapshot) => {
       setFavoriteList(snapshot.val());
     });
-    // const index = page.findIndex((item) => item.name === name);
-    // const character = page[index];
-    // character.isFavorite = !character.isFavorite;
-    // const newList = [
-    //   ...page.slice(0, index),
-    //   character,
-    //   ...page.slice(index + 1),
-    // ];
-    // addToFavorite(newList);
   };
 
   const setColor = (name) => {
-    if (favoriteList && Object.keys(favoriteList).length !== 0
+    if (
+      favoriteList
+      && Object.keys(favoriteList).length !== 0
       && favoriteList[name]
-      && favoriteList[name].favorite === true) {
+      && favoriteList[name].favorite === true
+    ) {
       return YELLOW;
     }
 
@@ -111,33 +108,32 @@ const PeopleList = (props) => {
 
   return (
     <div className="people-list">
-
       <Search
         placeholder="input search text"
+        // second argument im method getPeople()
+        // is defining update peopleList according to search result
         onSearch={(value) => getPeople(`${DEFAULT_URL}/?search=${value}`, true)}
         enterButton
       />
       <div className="people-list-container">
-        {isFetching
-          ? <Preloader/>
-          : (
-            <ul>
-              {page.map((item) => (
-                <li
-                  key={item.name}
-                >
-                  <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
-                    {item.name}
-                  </div>
-                  <LikeIcon
-                    fill={setColor(item.name)}
-                      // fill={favoriteList[item.url] &&  ? YELLOW : 'none'}
-                    onClick={() => onLike(item)}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
+        {isFetching ? (
+          <Preloader />
+        ) : (
+          <ul>
+            {page.map((item) => (
+              <li key={item.name}>
+                {/* take id of character from url property which we got from .../people */}
+                <div onClick={() => onItemSelected(`${item.url.match(/\d+/)}`)}>
+                  {item.name}
+                </div>
+                <LikeIcon
+                  fill={setColor(item.name)}
+                  onClick={() => onLike(item)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="people-list-buttons-container">
@@ -160,19 +156,29 @@ const PeopleList = (props) => {
           Next
         </Button>
       </div>
-
     </div>
   );
 };
 
 PeopleList.defaultProps = {
+  favoriteList: {},
   isFetching: false,
   page: [],
+  pages: {},
 };
 
 PeopleList.propTypes = {
+  changeCurrentPage: PropTypes.func.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  favoriteList: PropTypes.object,
+  getPeople: PropTypes.func.isRequired,
   isFetching: PropTypes.bool,
-  // results: Pe
+  next: PropTypes.string.isRequired,
+  onItemSelected: PropTypes.string.isRequired,
+  page: PropTypes.array,
+  pages: PropTypes.object,
+  prev: PropTypes.string.isRequired,
+  setFavoriteList: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
@@ -183,10 +189,6 @@ const mapDispatchToProps = {
 };
 
 const mapStateToProps = (state) => {
-  // const { results } = state.people;
-  // results.forEach((item) => {
-  //   return item.isFavorite = false;
-  // });
   const { pages, currentPage } = state.people;
   const lastDownloadedPage = Object.keys(pages).length;
 
